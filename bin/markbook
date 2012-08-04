@@ -60,7 +60,7 @@ else if ( new File(srcPath + "/.book.mb").exists ) {
 	
 	page.htmlText = html;
 	
-	var atts = markbook.cloneAttributes(bookAttributes);
+	var atts = {};
 	atts[".index.md_css"] = "selected";
 	
 	markbook.writePage(page, destPath + "/index.html", atts);
@@ -93,7 +93,7 @@ for ( var i = 0 ; i < files.length ; i++ ) {
 				addtoToc = false;
 			}
 			page.markdownPath = files[i].path;
-			var atts = markbook.cloneAttributes(bookAttributes);
+			var atts = {};
 			atts[name + "_css"] = "selected";
 			markbook.writePage(page, destFile.path, atts);
 			
@@ -149,7 +149,7 @@ for ( var i = 0 ; i < files.length ; i++ ) {
 }
 
 page.clearData();
-var atts = markbook.cloneAttributes(bookAttributes);
+var atts = {};
 atts["index_toc_css"] = "selected";
 markbook.writeToc(page, toc, tocPath, atts);
 

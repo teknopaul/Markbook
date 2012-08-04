@@ -4,7 +4,7 @@
 #
 # Takes two args the root path of the book and theroot path of the chapter if working on files in a chapter.
 #
-# Also accepts name:value  paris onthe command line after chapter
+# Also accepts name:value  pairs onthe command line after chapter containing any additional attributes.
 #
 cd `dirname $0`
 #include "../lib/Markbook.js"
@@ -19,6 +19,8 @@ var stderr = new File(File.STDERR);
 var markbook = new Markbook();
 
 var atts = markbook.getAllAttributes(argv[1], argv[2]);
+//for (att in atts)
+//	stderr.writeString("here " + att +":" + atts[att] + "\n");
 
 if (argc > 3) {
 	for (var i = 3 ; i < argc ; i++) {
