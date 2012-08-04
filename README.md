@@ -9,4 +9,7 @@ The `#!/bin/js` documentation is generated with a bunch of little scripts so thi
 No intallation is needed for Markbook, just checkout the code and run the `bin/markbook` script, but you do need #!/bin/js installed.
 
 
+[Markbook handbook](http://code.abnoctus.com/markbook/handbook/)
+[Markbook with no metadata](http://code.abnoctus.com/markbook/simple/)
+
 

@@ -1,8 +1,8 @@
 # Markdown Syntax
 
-This page has examples of markdown syntax and the defualt rendering of the text.
+This page has examples of Markdown syntax and the default rendering of the text.
 
-An inlines code `/var/log` element.
+An inline code `/var/log` element.
 
     #block code
     function foo() {
@@ -12,3 +12,4 @@ An inlines code `/var/log` element.
 > block quotes
 
 Some text with *bold* formatting.
+

@@ -98,7 +98,7 @@ for ( var i = 0 ; i < files.length ; i++ ) {
 			markbook.writePage(page, destFile.path, atts);
 			
 			if (addtoToc) {
-				tocEntry.dest = destFile.getAbsolutePath();
+				tocEntry.dest = destFile.name;
 				tocEntry.title = markbook.getTitle(files[i]);
 				tocEntry.synopsis = markbook.getIntro(files[i]);
 				toc.push(tocEntry);
