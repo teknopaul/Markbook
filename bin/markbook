@@ -1,0 +1,184 @@
+#!/bin/js
+#
+# Convert a directory of Markdown files into a website
+#
+
+if (argc <3 ) {
+	$.error(1,"src and sest paths required");
+	exit 1
+}
+
+var srcPath = new File(argv[1]).getAbsolutePath();
+var destPath = new File(argv[2]).getAbsolutePath();
+$.setEnv("SRC_PATH", srcPath);
+$.setEnv("DEST_PATH", destPath);
+
+$.info(1, "Generating book", srcPath);
+
+cd `dirname $0`
+#include "../lib/Markbook.js"
+
+var markbook = new Markbook();
+
+// make the book's index page
+var page = new MarkbookPage();
+page.bookPath = srcPath;
+page.headerPath = srcPath + "/.head.md";
+page.footerPath = srcPath + "/.footer.md";
+page.markdownPath = srcPath + "/.index.md"
+page.headPath =  srcPath + "/.head.html";
+page.tailPath = srcPath + "/.tail.html";
+
+if ( ! new File(page.headPath).exists ) page.headPath = "../lib/html/head.html";
+if ( ! new File(page.tailPath).exists ) page.tailPath = "../lib/html/tail.html";
+
+var toc = [];
+var tocPath = destPath + "/toc.html";
+
+// load the books meta data (if there is any)
+var bookAttributes = markbook.getBookAttributes(srcPath);
+
+if ( new File(srcPath + "/.index.html").exists ) {
+	cp "$SRC_PATH/.index.html" "$DEST_PATH/index.html"
+}
+else if (new File(srcPath + "/.index.md").exists) {
+	
+	// will begenerated below as a normal file 
+	//page.markdownPath = srcPath + "/.index.md"
+	//markbook.writePage(page, destPath + "/index.html", {".index.md_css":"selected"});
+	
+}
+else if ( new File(srcPath + "/.book.mb").exists ) {
+	// Create HTML from .book.md
+	var html = '<h1 class="booktitle">' + markbook.getTitle( new File(srcPath + "/.book.mb") ) + '</h1>';
+
+	if (bookAttributes.author) html += '<h2 class="author">by ' + bookAttributes.author + '</h2>';
+
+	html += '<p class="booksynposis">' + markbook.getIntro( new File(srcPath + "/.book.mb") ) + '</p>';
+
+	html += '<div><a href="toc.html">Table of contents</a></div>';
+	
+	page.htmlText = html;
+	
+	var atts = markbook.cloneAttributes(bookAttributes);
+	atts[".index.md_css"] = "selected";
+	
+	markbook.writePage(page, destPath + "/index.html", atts);
+	
+}
+else {
+	tocPath = destPath + "/index.html";
+}
+
+
+//  convert Markdown files and populate toc
+var files = new File(srcPath).listFiles();
+
+for ( var i = 0 ; i < files.length ; i++ ) {
+
+	page.clearData();
+	
+	// process markdown files
+	if ( files[i].isFile() ) {
+	
+		var name = files[i].name;
+		if (".header.md" === name || ".footer.md" === name) continue;
+		
+		var tocEntry = {};
+		var addtoToc = ! (name.indexOf("_") == 0);
+		if (name.indexOf(".md") == name.length - 3) {
+			var destFile = new File(destPath + "/" + files[i].ext("html").name);	
+			if (name.indexOf(".") == 0) {
+				destFile = new File(destPath + "/" + destFile.name.substring(1));
+				addtoToc = false;
+			}
+			page.markdownPath = files[i].path;
+			var atts = markbook.cloneAttributes(bookAttributes);
+			atts[name + "_css"] = "selected";
+			markbook.writePage(page, destFile.path, atts);
+			
+			if (addtoToc) {
+				tocEntry.dest = destFile.getAbsolutePath();
+				tocEntry.title = markbook.getTitle(files[i]);
+				tocEntry.synopsis = markbook.getIntro(files[i]);
+				toc.push(tocEntry);
+			}
+		}
+	}
+
+	// process chapter directories
+	if ( files[i].isDir() ) {
+		if (files[i].name.indexOf(".") == 0) continue;
+		
+		var tocEntry = {};
+		var sectionMetaFile = new File(files[i].path + "/.chapter.mb");
+		if ( sectionMetaFile.exists ) {
+			tocEntry.dest = files[i].name + "/index.html";
+			tocEntry.title = markbook.getTitle(sectionMetaFile);
+			tocEntry.synopsis = markbook.getIntro(sectionMetaFile);
+			toc.push(tocEntry);
+		}
+		else if ( files[i].listFiles("*.md").length > 0 ) {
+			tocEntry.dest = files[i].name + "/index.html";
+			tocEntry.title = files[i].name;
+			tocEntry.synopsis = "";
+			toc.push(tocEntry);
+		}
+
+		$.setEnv("CH_SRC", files[i].path);
+		$.setEnv("CH_DEST", destPath + "/" + files[i].name);
+		mkdir -p "$CH_DEST"
+		./markbookChapter "$CH_SRC" "$CH_DEST"
+	}
+
+}
+
+// Process the overriden files
+var files = new File(srcPath).listFiles();
+
+for ( var i = 0 ; i < files.length ; i++ ) {
+	if ( files[i].isFile() ) {
+		var name = files[i].name;
+		if (name.indexOf(".") === 0 && name.indexOf(".html") === name.length - 5) {
+			var destFile = new File(destPath + "/" + files[i].name.substring(1));	
+			$.setEnv("SRC", files[i].getAbsolutePath());
+			$.setEnv("DEST", destFile.getAbsolutePath());
+			cp "$SRC" "$DEST"
+		}
+	}
+}
+
+page.clearData();
+var atts = markbook.cloneAttributes(bookAttributes);
+atts["index_toc_css"] = "selected";
+markbook.writeToc(page, toc, tocPath, atts);
+
+$.info(3, "Copying static content")
+mkdir -p "$DEST_PATH/css";
+if ( new File(srcPath + "/" + ".css").exists ) {
+	cp -R --archive "$SRC_PATH/.css/"*  "$DEST_PATH/css" 
+}
+else {
+	cp -R --archive "../lib/css/"*  "$DEST_PATH/css" 
+}
+
+mkdir -p "$DEST_PATH/img";
+if ( new File(srcPath + "/" + ".img").exists ) {
+	cp -R --archive "$SRC_PATH/.img/"*  "$DEST_PATH/img" 
+}
+else {
+	cp -R --archive "../lib/img/"*  "$DEST_PATH/img" 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

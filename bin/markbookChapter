@@ -1,0 +1,137 @@
+#!/bin/js
+#
+# Convert a directory of Markdown files into a website
+#
+
+if (argc <3 ) {
+	$.error(1,"src and dest paths required");
+	exit 1
+}
+
+var srcPath = new File(argv[1]).getAbsolutePath();
+var destPath = new File(argv[2]).getAbsolutePath();
+$.setEnv("SRC_PATH", srcPath);
+$.setEnv("DEST_PATH", destPath);
+
+$.info(2, "Generating chapter", srcPath);
+
+cd `dirname $0`
+#include "../lib/Markbook.js"
+
+var markbook = new Markbook();
+
+// page defaults to the book's setup.
+var page = new MarkbookPage();
+page.bookPath =     srcPath + "/..";
+page.chapterPath =  srcPath;
+page.headerPath =   srcPath + "/../.head.md";
+page.footerPath =   srcPath + "/../.footer.md";
+page.headPath =     srcPath + "/../.head.html";
+page.tailPath =     srcPath + "/../.tail.html";
+
+// page is overwritten by the chapter
+if ( new File(srcPath + "/.head.md").exists )   page.headerPath = srcPath + "/.head.md";
+if ( new File(srcPath + "/.footer.md").exists ) page.footerPath = srcPath + "/.footer.md";
+if ( new File(srcPath + "/.index.md").exists )  page.markdownPath = srcPath + "/.index.md";
+if ( new File(srcPath + "/.head.html").exists ) page.headPath = srcPath + "/.head.html";
+if ( new File(srcPath + "/.head.html").exists ) page.tailPath = srcPath + "/.head.html";
+
+if ( ! new File(page.headPath).exists ) page.headPath = "../lib/html/head.html";
+if ( ! new File(page.tailPath).exists ) page.tailPath = "../lib/html/tail.html";
+
+var toc = [];
+var tocPath = destPath + "/toc.html";
+
+// load the books meta data (if there is any)
+
+var chapterAtts = markbook.getAllAttributes(srcPath + "/..", srcPath);
+
+// Write the index page
+
+if ( new File(srcPath + "/.index.html").exists ) {
+	cp "$SRC_PATH/.index.html" "$DEST_PATH/index.html"
+}
+else if ( new File(srcPath + "/.index.md").exists ) {
+	
+	page.markdownPath = srcPath + "/.index.md"
+	
+	markbook.writePage(page, destPath + "/index.html");
+	
+}
+else if ( new File(srcPath + "/.chapter.mb").exists ) {
+
+	// Create HTML from .chapter.md
+	var html = '<h1 class="chaptertitle">' + markbook.getTitle( new File(srcPath + "/.chapter.mb") ) + '</h1>';
+
+	if (chapterAtts.author) html += '<h2 class="author">by ' + chapterAtts.author + '</h2>';
+
+	html += '<p class="chaptersynposis">' + markbook.getIntro( new File(srcPath + "/.chapter.mb") ) + '</p>';
+
+	html += '<div><a href="toc.html">Table of contents</a></div>';
+
+	page.htmlText = html;
+	
+	markbook.writePage(page, destPath + "/index.html");
+
+}
+else {
+	tocPath = destPath + "/index.html";
+}
+
+
+var files = new File(srcPath).listFiles();
+
+for ( var i = 0 ; i < files.length ; i++ ) {
+
+	page.clearData();
+	
+	if ( files[i].isFile() ) {
+		var name = files[i].name;
+		if (".header.md" === name || ".footer.md" === name) continue;
+		
+		var tocEntry = {};
+		var addtoToc = ! (name.indexOf("_") === 0);
+		if ( name.indexOf(".md") === name.length - 3) {
+			var destFile = new File(destPath + "/" + files[i].ext("html").name);	
+			if (name.indexOf(".") === 0) {
+ 				destFile = new File(destPath + "/" + destFile.name.substring(1));
+				addtoToc = false;
+			}
+			page.markdownPath = files[i].path;
+			var atts = markbook.cloneAttributes(chapterAtts);
+			atts[name + "_css"] = "selected";
+			markbook.writePage(page, destFile.path);
+			
+			if (addtoToc) {
+				tocEntry.dest = destFile.name;
+				tocEntry.title = markbook.getTitle(files[i]);
+				tocEntry.synopsis = markbook.getIntro(files[i]);
+				toc.push(tocEntry);
+			}
+		}
+	}
+}
+
+// Process the overriden files
+var files = new File(srcPath).listFiles();
+
+for ( var i = 0 ; i < files.length ; i++ ) {
+	if ( files[i].isFile() ) {
+		var name = files[i].name;
+		if (name.indexOf(".") === 0 && name.indexOf(".html") === name.length - 5) {
+			var destFile = new File(destPath + "/" + files[i].name.substring(1));	
+			$.setEnv("SRC", files[i].getAbsolutePath());
+			$.setEnv("DEST", destFile.getAbsolutePath());
+			cp "$SRC" "$DEST"
+		}
+	}
+}
+
+page.clearData();
+
+var atts = markbook.cloneAttributes(chapterAtts);
+atts[new File(argv[1]).name + "_css"] = "selected";
+
+markbook.writeToc(page, toc, tocPath, atts);
+
+

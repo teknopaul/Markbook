@@ -1,0 +1,12 @@
+
+# Section Two of the example book
+
+The synopsis for a markbook is contained in the .chapter.mb file.
+
+A chapter may have attributes that override the books attributes.
+
+author: someone else
+
+main_css: notactive
+
+section2_css: active

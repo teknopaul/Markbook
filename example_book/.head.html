@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>@short_name@</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link href="@root@css/style.css" rel="stylesheet"/>
+	<link href="@root@img/markbook-16x16.png" rel="shortcut icon"/>
+	<link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'>	
+	<script type="text/javascript">
+		load = function() {
+			document.getElementsByTagName("header").item(0).onclick = function(){
+				document.location.href = "index.html";
+			}
+		}
+		document.addEventListener("DOMContentLoaded", load, false)
+	</script>
+  </head>
+	<body id="pw-body">
+		<div id="tab-container">
+			<nav id="tabs">
+				<div class="tab @index_toc_css@" id="doc-index-tab">
+				  <a class="vertical" href="@root@toc.html">Doc index</a>
+				</div>
+				<div class="tab @01_Section1_css@" id="sec1-index-tab">
+				  <a class="vertical" href="@root@01_Section1/toc.html">Section 1</a>
+				</div>
+				<div class="tab @02_Section2_css@" id="sec2-index-tab">
+				  <a class="vertical" href="@root@02_Section2/toc.html">Section 2</a>
+				</div>
+				<div class="tab @_References.md_css@" id="references-index-tab">
+				  <a class="vertical" href="@root@_References.html">References</a>
+				</div>
+			</nav>
+			<div id="container">
+				<header><span class="title">Markbook handbook</span></header>
+				<div id="content">
+				<div id="main">

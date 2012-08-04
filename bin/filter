@@ -1,0 +1,53 @@
+#!/bin/js
+#
+# Filter replacing @param@
+#
+# Takes two args the root path of the book and theroot path of the chapter if working on files in a chapter.
+#
+# Also accepts name:value  paris onthe command line after chapter
+#
+cd `dirname $0`
+#include "../lib/Markbook.js"
+
+if ( argc < 2) {
+	cat
+	exit 1
+}
+
+var stderr = new File(File.STDERR);
+
+var markbook = new Markbook();
+
+var atts = markbook.getAllAttributes(argv[1], argv[2]);
+
+if (argc > 3) {
+	for (var i = 3 ; i < argc ; i++) {
+		var colonIdx = argv[i].indexOf(":");
+		if (colonIdx > 0) {
+			atts[argv[i].substring(0, colonIdx)] = argv[i].substring(colonIdx + 1);
+		}
+	}
+}
+
+var stdin = new File(File.STDIN);
+var stdout = new File(File.STDOUT);
+
+function replace(string, atts) {
+	var buffer = string;
+	for ( att in atts ) {
+		//stderr.writeString("@" + att + "@" + atts[att] + "\n"); 
+		buffer = buffer.replace("@" + att + "@", atts[att]); 
+	}
+	return buffer;
+}
+
+var line = stdin.readString();
+while (line != null) {
+	if ( line.indexOf("@") >= 0 ) {
+		stdout.writeString( replace(line, atts) );
+	}
+	else {
+		stdout.writeString(line);
+	}
+	line = stdin.readString();
+}
