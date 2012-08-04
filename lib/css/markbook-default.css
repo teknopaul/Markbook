@@ -16,9 +16,12 @@ iframe {
     margin: 0;
     padding: 0;
 }
-h1, h2, h3, h4, h5, b, em {
+h1, h2, h3, h4, h5, h6, b, em {
     font-weight: bold;
-	padding: 20px;
+}
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	padding: 10px 20px 0px 20px;
 }
 h4 {
     font-size: 13pt;
@@ -30,9 +33,10 @@ h2 {
     font-size: 15pt;
 }
 p {
-    margin: 0;
+   	margin: 10px 20px 0px 20px;
     padding: 0;
     margin-bottom: 10px;
+	text-align: justify;
 }
 ul {
     margin-bottom: 10px;
@@ -44,15 +48,15 @@ pre {
     font-weight: normal;
     text-decoration: none;
 	padding:0px;
-	margin:0px;
-    margin-left:20px;
-    margin-right:20px;
-    margin-bottom:10px;
+	margin: 10px 20px 20px 20px;
     /*box-shadow: 1px 1px 2px #999;*/
 } 
 code {
 	font-family: 'Ubuntu Mono', mono-spaced;
 	background : #f6f6f6;
+}
+p code {
+	padding: 3px;
 }
 
 pre code {
@@ -60,9 +64,6 @@ pre code {
 	display: block;
 	padding:10px;
     box-shadow: inset 1px 1px 2px #999;
-}
-p {
-	text-align: justify;
 }
 samp {
     font-size: 12px;
@@ -100,13 +101,14 @@ img {
     vertical-align: middle;
 }
 blockquote {
-	margin: 0;
-	padding: 0;
+	margin: 0 20 0 20;
+	padding: 0 0 0 0;
 	border-left : 3px solid #ccc;
-	margin-left: 20px;
 	font-style: italic;
 }
+/* Markdown renders bold as em */
 em {
+	font-style: normal;
 	margin: 0;
 	padding: 0;
 }
@@ -115,6 +117,7 @@ html {
 }
 body {
 	background: -moz-linear-gradient(center top , #fff, #eee) repeat scroll 0 0 transparent;
+	background: -webkit-linear-gradient(top, #fff, #eee);
     text-align: center;
 	padding-top: 20px;
 }
@@ -130,22 +133,22 @@ body {
     min-height: 650px;
     position: relative;
 	border-radius: 0px 8px 0px 0px;
+	padding: 0px 0px 10px 0px;
 }
-#content h1 {
-	margin: 0;
-	padding: 20;
+#content h1:first-child {
+	margin: 0px 0px 10px 0px;
+	padding: 20px 20px 20px 20px;
 	color : #eee;
 	border-radius: 0px 8px 0px 0px;
-	background: -moz-linear-gradient(center top , #222, #333) repeat scroll 0 0 transparent;
+	background-color: #000;
+	background: -moz-linear-gradient(center top , #444, #555) repeat scroll 0 0 transparent;
+	background: -webkit-linear-gradient(top, #444, #555);
 	text-shadow: -1px -1px 1px #000;
-}
-#content p {
-	margin: 20px 20px 20px 20px;
 }
 footer {
 	font-size: 9px;
-	color: #000;
+	color: #999;
 	background-color: #eee;
 	text-align: center;
-	border-radius: 0 0 8px 0;
+	border-radius: 0 0 8px 0;	
 }
