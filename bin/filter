@@ -2,9 +2,9 @@
 #
 # Filter replacing @param@
 #
-# Takes two args the root path of the book and theroot path of the chapter if working on files in a chapter.
+# Takes two args the root path of the book and the root path of the chapter if working on files in a chapter.
 #
-# Also accepts name:value  pairs onthe command line after chapter containing any additional attributes.
+# Also accepts name:value  pairs on the command line after chapter containing any additional attributes.
 #
 cd `dirname $0`
 #include "../lib/Markbook.js"

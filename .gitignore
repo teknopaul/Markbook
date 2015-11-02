@@ -1,3 +1,6 @@
 simple_output
 example_output
-
+handbook_output
+markbook-*.deb
+deploy/DEBIAN/control
+deploy/root/

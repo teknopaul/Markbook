@@ -4,7 +4,7 @@
 #
 
 if (argc <3 ) {
-	$.error(1,"src and sest paths required");
+	$.error(1,"src and dest paths required");
 	exit 1
 }
 
@@ -43,7 +43,7 @@ if ( new File(srcPath + "/.index.html").exists ) {
 }
 else if (new File(srcPath + "/.index.md").exists) {
 	
-	// will begenerated below as a normal file 
+	// will be generated below as a normal file 
 	//page.markdownPath = srcPath + "/.index.md"
 	//markbook.writePage(page, destPath + "/index.html", {".index.md_css":"selected"});
 	
