@@ -4,3 +4,5 @@ handbook_output
 markbook-*.deb
 deploy/DEBIAN/control
 deploy/root/
+.bzr
+.bzrignore
